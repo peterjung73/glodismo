@@ -2,7 +2,7 @@ from data import MNIST, BernoulliSyntheticDataset, MNISTWavelet, Synthetic, BagO
 from recovery import NA_ALISTA, IHT, NNLAD
 from baseline import run_experiment_baseline, NeighborGenerator
 from sensing_matrices import Pooling, ConstructedPooling
-from noise import GaussianNoise, StudentNoise, Noiseless
+from noise import GaussianNoise, StudentTNoise, Noiseless
 import numpy as np
 from conf import device
 import matplotlib.pyplot as plt
@@ -34,7 +34,7 @@ from data import BetaPriorSyntheticDataset
 model = NNLAD(200,0.1, 0.6)
 test_model = NNLAD(1000, 0.1, 0.6)
 epochs = 1# 50
-noise=GaussianNoise(40);
+noise=StudentTNoise(40)# GaussianNoise(40);
 
 for data in [Synthetic(n, s, s, BetaPriorSyntheticDataset, batch_size=512)]:
 
