@@ -11,6 +11,7 @@ class GaussianNoise(nn.Module):
     def __init__(self, snr):
         super(GaussianNoise, self).__init__()
         self.snr = snr
+        self.name = 'gaussian'
 
     def forward(self, y):
         std = torch.std(y, dim=1) * np.power(10.0, -self.snr / 20)
@@ -26,18 +27,20 @@ class Noiseless(nn.Module):
     def __init__(self):
         super(Noiseless, self).__init__()
         self.snr = 'inf'
+        self.name = 'noiseless'
 
 
     def forward(self, y):
         return y
 
-class StudentNoise(nn.Module):
+class StudentTNoise(nn.Module):
     """
     Create Gaussian noise on the input with specified signal to noise ration snr.
     """
     def __init__(self, snr):
-        super(StudentNoise, self).__init__()
+        super(StudentTNoise, self).__init__()
         self.snr = snr
+        self.name = 'studentT'
 
 
     def forward(self, y):

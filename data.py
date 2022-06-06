@@ -179,5 +179,8 @@ class Synthetic:
         self.test_loader = torch.utils.data.DataLoader(
             self.test_data, batch_size=batch_size, shuffle=False, drop_last=True,
         )
+        """
+        psi / psistar could be a potential dictionary
+        """
         self.psi = lambda x: x
         self.psistar = lambda x: x

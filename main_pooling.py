@@ -33,7 +33,8 @@ m = 248
 from data import BetaPriorSyntheticDataset
 model = NNLAD(200,0.1, 0.6)
 test_model = NNLAD(1000, 0.1, 0.6)
-epochs = 50
+epochs = 1# 50
+noise=GaussianNoise(40);
 
 for data in [Synthetic(n, s, s, BetaPriorSyntheticDataset, batch_size=512)]:
 
@@ -51,7 +52,7 @@ for data in [Synthetic(n, s, s, BetaPriorSyntheticDataset, batch_size=512)]:
             use_mse=False,
             train_matrix=False,
             use_median=False,
-            noise=GaussianNoise(40),
+            noise=noise,
             epochs=0,
             positive_threshold=0.01,
             lr=0.0002,
@@ -59,7 +60,7 @@ for data in [Synthetic(n, s, s, BetaPriorSyntheticDataset, batch_size=512)]:
         ))
         scalars.append(scalar)
 
-      save_log(losses[np.argmin([x[1][0]["test_nmae"] for x in losses])], "results/pooling_random_" +data.name+"seed_"+str(seed))
+      save_log(losses[np.argmin([x[1][0]["test_nmae"] for x in losses])], "results/pooling_random_" +data.name+"_"+noise.name+"_seed_"+str(seed))
       losses = [x[1][0]["test_nmae"] for x in losses]
 
       print("Training Pooling Matrix using GLODISMO")
@@ -71,13 +72,13 @@ for data in [Synthetic(n, s, s, BetaPriorSyntheticDataset, batch_size=512)]:
           use_mse=False,
           train_matrix=True,
           use_median=False,
-          noise=GaussianNoise(40),
+          noise=noise,
           epochs=epochs,
           positive_threshold=0.01,
           lr=0.00002,
           test_model=test_model,
           use_greedy_stabilization=False,
-      ), "results/pooling_learned_"+data.name+"seed_"+str(seed))
+      ), "results/pooling_learned_"+data.name+"_"+noise.name+"_seed_"+str(seed))
       
       print("Simulated Annealing Baseline")
       save_log(run_experiment_baseline(
@@ -88,14 +89,14 @@ for data in [Synthetic(n, s, s, BetaPriorSyntheticDataset, batch_size=512)]:
           use_mse=False,
           train_matrix=True,
           use_median=False,
-          noise=GaussianNoise(40),
+          noise=noise,
           epochs=epochs,
           positive_threshold=0.01,
           initial_temperature= 0.0006,
           temperature_decay=0.9997,
           greedy=False,
           test_model=test_model,
-      ),  "results/pooling_baseline_"+data.name+"seed_"+str(seed))
+      ),  "results/pooling_baseline_"+data.name+"_"+noise.name+"_seed_"+str(seed))
       
       print("Greedy Baseline")
       save_log(run_experiment_baseline(
@@ -106,13 +107,13 @@ for data in [Synthetic(n, s, s, BetaPriorSyntheticDataset, batch_size=512)]:
           use_mse=False,
           train_matrix=True,
           use_median=False,
-          noise=GaussianNoise(40),
+          noise=noise,
           epochs=epochs,
           positive_threshold=0.01,
           initial_temperature= 0.0006,
           temperature_decay=0.9997,
           greedy=True,
           test_model=test_model,
-      ), "results/pooling_baseline_greedy_"+data.name+"seed_"+str(seed))
+      ), "results/pooling_baseline_greedy_"+data.name+"_"+noise.name+"_seed_"+str(seed))
       
 

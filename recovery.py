@@ -283,6 +283,16 @@ class NA_NNLAD(nn.Module):
 
 class NNLAD(nn.Module):
     def __init__(self, k, sigma, tau):
+        """
+        Parameters
+        -------------
+        k : int
+            number of iterations
+        sigma : 
+            TBD
+        tau : 
+            TBD
+        """
         super(NNLAD, self).__init__()
         self.k = k
         self.sigma = sigma
