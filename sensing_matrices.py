@@ -51,13 +51,17 @@ class Pooling(nn.Module):
     def forward(self, b, test=False):
 
         if not test:
+            # log-probs (=phi)
             logits = self.param.repeat(b, 1, 1)
+            # create gumbel noise
             noise = - torch.log(- torch.log(torch.rand((b, self.m, self.n), device=device)))
-
+            # add the gumbel noise and compute the soft-max
             probs = torch.softmax((logits + noise / 1000) / self.temperature, dim=2)
-            values, index = torch.topk(probs, self.d, dim=2)
-
+            # take the d topk-values of probs (hard-decision to 0/1)
+            values, index = torch.topk(probs, self.d, dim=2) # ?? per column or row ??
+            # generate a binary matrix from probs
             y_hard = torch.zeros_like(probs, memory_format=torch.legacy_contiguous_format).scatter_(2, index, 1.0)
+            # ?? (not sure - need because it needs to fixed for reconstruction loop)
             phi = y_hard - probs.detach() + probs
 
         if test:
