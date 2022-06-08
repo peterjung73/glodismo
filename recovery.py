@@ -292,6 +292,10 @@ class NNLAD(nn.Module):
             TBD
         tau : 
             TBD
+            see Algorithm 4.1 in 
+            Petersen, Jung, Bah 
+            "Efficient Tuning-Free ℓ1-Regression of Nonnegative Compressible Signals"
+            https://arxiv.org/abs/2003.13092
         """
         super(NNLAD, self).__init__()
         self.k = k

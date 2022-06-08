@@ -1,5 +1,6 @@
 from cgi import print_form
 from data import MNIST, BernoulliSyntheticDataset, MNISTWavelet, Synthetic, BagOfWords
+from data import BetaPriorSyntheticDataset
 from recovery import NA_ALISTA, IHT, NNLAD
 from baseline import run_experiment_baseline, NeighborGenerator
 from sensing_matrices import Pooling, ConstructedPooling
@@ -28,16 +29,25 @@ def save_log(results, name):
     pd.DataFrame(train_logs).to_csv(name + "_train.csv", index=False)
 
 
+
+"""
+Petersen, Jung, Bah 
+"Efficient Tuning-Free ℓ1-Regression of Nonnegative Compressible Signals"
+https://arxiv.org/abs/2003.13092
+"""
+
 n = 961
 s = 80
 m = 248
-from data import BetaPriorSyntheticDataset
-model = NNLAD(200,0.1, 0.6)
-test_model = NNLAD(1000, 0.1, 0.6)
-epochs =  1 #50
+nnlad_sigma= 0.1
+nnlad_tau  = 0.6
+
+model      = NNLAD(200,nnlad_sigma,nnlad_tau) # NNLAD(200,nnlad_sigma, nnlad_tau)
+test_model = NNLAD(1000,nnlad_sigma, nnlad_tau) # NNLAD(1000, nnlad_sigma, nnlad_tau)
+epochs     = 10 #50
 batch_size = 10 #512
-seeds = 1 #10
-noise=StudentTNoise(40)# GaussianNoise(40);
+seeds      = 1 #10
+noise      = StudentTNoise(40)# GaussianNoise(40);
 
 for data in [Synthetic(n, s, s, BetaPriorSyntheticDataset, batch_size=batch_size)]:
 
