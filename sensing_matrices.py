@@ -61,7 +61,9 @@ class Pooling(nn.Module):
             values, index = torch.topk(probs, self.d, dim=2) # ?? per column or row ??
             # generate a binary matrix from probs
             y_hard = torch.zeros_like(probs, memory_format=torch.legacy_contiguous_format).scatter_(2, index, 1.0)
-            # ?? (not sure - need because it needs to fixed for reconstruction loop)
+
+            # straight through estimator: efficient method for sampling in forward-pass (y_hard) and
+            # take derivatives wrt probs in the backward pass since probs=probs.detach() 
             phi = y_hard - probs.detach() + probs
 
         if test:
