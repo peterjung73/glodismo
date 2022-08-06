@@ -77,6 +77,15 @@ class Pooling(nn.Module):
         norm = (phi.norm(dim=2).unsqueeze(2) + 10e-3)
         return phi / norm * torch.maximum(torch.tensor(0.01).to(device),self.scalar)
 
+    def coherence(self):
+        # take the d topk-values of probs (hard-decision to 0/1)
+        values, index = torch.topk(self.param, self.d, dim=2) # ?? per column or row ??
+
+        phi = torch.zeros(1, self.m, self.n, device=device)
+        phi.scatter_(2, index, 1.0)
+        phi = phi.reshape(self.m, self.n)
+        return coherence(phi)
+
 class Pixel(nn.Module):
     """Class for learning pixel masks (d ones per row)"""
 
@@ -180,7 +189,7 @@ class ConstructedPooling:
     N = Q**2 # population size
     prevalence = 0.73 # infection rate [%]
     S1 = np.int(np.round((prevalence*N/100))) # between 1 to N
-    #print('Infected/Population: {}/{}\n'.format(S1,N))
+    #print('Infected/Population: {   }/{}\n'.format(S1,N))
     # Pooling strategy to mix viral loads
     # Permutation matrix
     P = np.zeros((Q,Q))
@@ -206,7 +215,10 @@ class ConstructedPooling:
     return self
 
 
-
+def coherence(phi):
+    phi1=phi/np.linalg.norm(phi,2,0)
+    gram = np.dot(phi1.T, phi1) - np.eye(phi1.shape[1])
+    return np.max(np.abs(gram))
 
 def circulant(tensor, dim):
     """From: https://stackoverflow.com/questions/69820726/is-there-a-way-to-compute-a-circulant-matrix-in-pytorch
@@ -276,3 +288,5 @@ class CircularConv(nn.Module):
 
         phi = circulant(kernel, -1)
         return phi[mask.bool().squeeze(2)].reshape(-1, self.m, 784)
+
+

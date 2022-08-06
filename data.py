@@ -164,12 +164,12 @@ class Synthetic:
     Synthetic dataset with train an test split.
     """
 
-    def __init__(self, n, s_train, s_test, dataset, batch_size=512):
+    def __init__(self, n, s_train, s_test, dataset, batch_size=512, train_len=50000, test_len=10000):
         self.n = n
         self.name = 'Synthetic'
         self.s = s_train
-        self.train_data = dataset(n, s_train, 50000, seed=0)
-        self.test_data = dataset(n, s_test, 10000, seed=1)
+        self.train_data = dataset(n, s_train, train_len, seed=0)
+        self.test_data = dataset(n, s_test, test_len, seed=1)
 
         self.train_loader = torch.utils.data.DataLoader(
             self.train_data, batch_size=batch_size, shuffle=True, drop_last=True,

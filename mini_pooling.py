@@ -42,14 +42,17 @@ m = 248
 nnlad_sigma= 0.1
 nnlad_tau  = 0.6
 
-model      = NNLAD(200,nnlad_sigma,nnlad_tau) # NNLAD(200,nnlad_sigma, nnlad_tau)
-test_model = NNLAD(1000,nnlad_sigma, nnlad_tau) # NNLAD(1000, nnlad_sigma, nnlad_tau)
+train_len = 100 # number CS problems per training epoch
+test_len = 100 # number CS problems per test epoch
+
+model      = NNLAD(20,nnlad_sigma,nnlad_tau) # NNLAD(200,nnlad_sigma, nnlad_tau)
+test_model = NNLAD(100,nnlad_sigma, nnlad_tau) # NNLAD(1000, nnlad_sigma, nnlad_tau)
 epochs     = 10 #50
-batch_size = 10 #512
+batch_size = 1 #512
 seeds      = 1 #10
 noise      = StudentTNoise(40)# GaussianNoise(40);
 
-for data in [Synthetic(n, s, s, BetaPriorSyntheticDataset, batch_size=batch_size)]:
+for data in [Synthetic(n, s, s, BetaPriorSyntheticDataset, batch_size=batch_size, train_len=train_len, test_len=test_len)]:
 
   for seed in range(seeds):
       losses = []

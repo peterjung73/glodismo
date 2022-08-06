@@ -4,6 +4,7 @@ import torch
 from tqdm import tqdm
 import numpy as np
 from recovery import get_median_backward_op
+from sensing_matrices import coherence
 
 def test_epoch(model, sensing_matrix, data, noise, use_median, n, positive_threshold):
   with torch.no_grad():
@@ -22,7 +23,7 @@ def test_epoch(model, sensing_matrix, data, noise, use_median, n, positive_thres
     if use_median:
       backward_op = get_median_backward_op(phi, n, sensing_matrix.d, test=True)
 
-    for iteration, (X, _) in tqdm(enumerate(iter(data.test_loader))):
+    for iteration, (X, _) in tqdm(enumerate(iter(data.test_loader)),"testing"):
       X = X.to(device) 
       y = noise(forward_op(X))
 
@@ -55,7 +56,7 @@ def train_epoch(model, sensing_matrix, data, noise, use_median, n, positive_thre
   false_positives = []
   false_negatives = []
   
-  for iteration, (X, _) in tqdm(enumerate(iter(data.train_loader))):
+  for iteration, (X, _) in tqdm(enumerate(iter(data.train_loader)),"training"):
     X = X.to(device)
 
     opt.zero_grad()
@@ -97,7 +98,8 @@ def train_epoch(model, sensing_matrix, data, noise, use_median, n, positive_thre
     train_loss_l2 += ((Xhat-X)**2).mean().item()
     train_normalizer_l1 += (torch.abs(X)).mean().item()
     train_loss_l1 += torch.abs(Xhat - X).mean().item()
-
+    train_coherence = sensing_matrix.coherence() # always the last actual value
+  
     false_positives.append((detected_positives * (1 - true_positives)).float().mean().item())
     false_negatives.append((true_positives * (1 - detected_positives)).float().mean().item())
   return {
@@ -107,6 +109,7 @@ def train_epoch(model, sensing_matrix, data, noise, use_median, n, positive_thre
     "train_nmae": 10 * np.log10(train_loss_l1 / train_normalizer_l1),
     "train_false_positives": np.mean(false_positives),
     "train_false_negatives": np.mean(false_negatives),
+    "train_coherence": train_coherence,
   }
 
 def run_experiment(
@@ -148,5 +151,4 @@ def run_experiment(
       data.train_data.reset()
       test_metrics.append(test_epoch(test_model, sensing_matrix, data, noise, use_median, n, positive_threshold))
       print("Epoch:", epoch+1, "Test NMSE:", test_metrics[-1]['test_nmse'],   "Test NMAE:", test_metrics[-1]['test_nmae'], "Train NMSE:", train_metrics[-1]['train_nmse'],  "Train NMAE:", train_metrics[-1]['train_nmae'])
-
   return train_metrics, test_metrics
