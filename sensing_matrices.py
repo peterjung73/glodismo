@@ -84,7 +84,7 @@ class Pooling(nn.Module):
         phi = torch.zeros(1, self.m, self.n, device=device)
         phi.scatter_(2, index, 1.0)
         phi = phi.reshape(self.m, self.n)
-        return coherence(phi)
+        return coherence(phi.cpu().numpy())
 
 class Pixel(nn.Module):
     """Class for learning pixel masks (d ones per row)"""
