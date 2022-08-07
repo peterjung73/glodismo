@@ -30,13 +30,17 @@ def save_log(results, name):
 n = 961
 s = 80
 m = 248
+
+train_len = 50000 # number CS problems per training epoch
+test_len = 10000 # number CS problems per test epoch
+
 from data import BetaPriorSyntheticDataset
 model = NNLAD(200,0.1, 0.6)
 test_model = NNLAD(1000, 0.1, 0.6)
 epochs =  50
 noise=StudentTNoise(40)# GaussianNoise(40);
 
-for data in [Synthetic(n, s, s, BetaPriorSyntheticDataset, batch_size=512)]:
+for data in [Synthetic(n, s, s, BetaPriorSyntheticDataset, batch_size=512, train_len=train_len, test_len=test_len)]:
 
   for seed in range(10):
       losses = []
