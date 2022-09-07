@@ -38,7 +38,8 @@ from data import BetaPriorSyntheticDataset
 model = NNLAD(200,0.1, 0.6)
 test_model = NNLAD(1000, 0.1, 0.6)
 epochs =  50
-noise=StudentTNoise(40)# GaussianNoise(40);
+noise=GaussianNoise(40)
+# noise=StudentTNoise(40)
 
 for data in [Synthetic(n, s, s, BetaPriorSyntheticDataset, batch_size=512, train_len=train_len, test_len=test_len)]:
 
