@@ -55,7 +55,7 @@ class Pooling(nn.Module):
             logits = self.param.repeat(b, 1, 1)
             # create gumbel noise
             noise = - torch.log(- torch.log(torch.rand((b, self.m, self.n), device=device)))
-            # add the gumbel noise and compute the soft-max
+            # add the gumbel noise and compute the soft-max over dimension 
             probs = torch.softmax((logits + noise / 1000) / self.temperature, dim=2)
             # take the d topk-values of probs (hard-decision to 0/1)
             values, index = torch.topk(probs, self.d, dim=2) # ?? per column or row ??
@@ -219,6 +219,14 @@ def coherence(phi):
     phi1=phi/np.linalg.norm(phi,2,0)
     gram = np.dot(phi1.T, phi1) - np.eye(phi1.shape[1])
     return np.max(np.abs(gram))
+
+def phi_entropy(phi):
+    P=np.linalg.exp(phi)
+    Psum=np.linalg.sum(P)
+    ent = np.dot(phi1.T, phi1) - np.eye(phi1.shape[1])
+    return np.max(np.abs(gram))
+
+
 
 def circulant(tensor, dim):
     """From: https://stackoverflow.com/questions/69820726/is-there-a-way-to-compute-a-circulant-matrix-in-pytorch
