@@ -14,7 +14,8 @@ def plot(ax, df, label, key, color):
     
     # ax.plot(means, c=color, label=label)
     # ax.fill_between(range(len(means)), means - stds, means + stds, color=color, alpha=0.3, linewidth=0.0)
-    ax.plot(means, label=label)
+    means=10*np.log10(means)
+    x.plot(means, label=label)
     ax.fill_between(range(len(means)), means - stds, means + stds, alpha=0.3, linewidth=0.0)
 
 def plot_average(algs,key,experiment,resultsdir='results',traintest='train',suffix='Synthetic*_*'):

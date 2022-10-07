@@ -48,6 +48,7 @@ class Pooling(nn.Module):
         self.scalar = nn.Parameter(torch.tensor( initial_scalar,device=device))
 
 
+
     def forward(self, b, test=False):
 
         if not test:
