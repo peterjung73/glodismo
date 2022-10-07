@@ -301,6 +301,7 @@ class NNLAD(nn.Module):
         self.k = k
         self.sigma = sigma
         self.tau = tau
+        print(self.sigma)
 
 
     def forward(self, y, forward_op, backward_op, psi, psistar, use_greedy_stabilization=False):
@@ -314,12 +315,15 @@ class NNLAD(nn.Module):
         x_tilde = forward_op(x)
         v_tilde = forward_op(v)
         for i in range(self.k):
-            w = w + self.sigma * (v_tilde - y)
+            imax  = np.minimum(i,self.sigma.size-1)
+            sigma = self.sigma[0][imax]
+            tau   = self.tau[0][imax]
+            w = w + sigma * (v_tilde - y)
             w = torch.minimum(torch.ones_like(w), torch.abs(w)) * torch.sign(w)
             w_tilde = backward_op(w)
             v = -x
 
-            x = torch.maximum(torch.zeros_like(x), x - self.tau * w_tilde)
+            x = torch.maximum(torch.zeros_like(x), x - tau * w_tilde)
             v = v + 2 * x
             v_tilde = forward_op(v)
             x_tilde = 0.5 * (v_tilde + x_tilde)
